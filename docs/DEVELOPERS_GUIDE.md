@@ -14,7 +14,7 @@ You can run AWS CodeBuild builds locally using the [CodeBuild local agent](https
 1. Setup
 
 - Download the local CodeBuild script and make it executable.
-- Send the `GH_TOKEN` environmental GitHub Personal Access Token (PAT) into a `./.env` file
+- Write the `GH_TOKEN` environment variable (a GitHub Personal Access Token) into a `./.env` file
 
 ```bash
 if [ ! -f codebuild_build.sh ]; then
