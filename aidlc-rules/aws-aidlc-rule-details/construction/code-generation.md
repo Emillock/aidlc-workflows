@@ -8,8 +8,7 @@ This stage generates code for each unit of work through two integrated parts:
 **Note**: For brownfield projects, "generate" means modify existing files when appropriate, not create duplicates.
 
 ## Prerequisites
-- Unit Design Generation must be complete for the unit
-- NFR Implementation (if executed) must be complete for the unit
+- All per-unit design stages in the execution plan (Functional Design, NFR Requirements, NFR Design, Infrastructure Design — whichever were planned to execute) must be complete for the unit
 - All unit design artifacts must be available
 - Unit is ready for code generation
 
@@ -18,7 +17,7 @@ This stage generates code for each unit of work through two integrated parts:
 # PART 1: PLANNING
 
 ## Step 1: Analyze Unit Context
-- [ ] Read unit design artifacts from Unit Design Generation
+- [ ] Read the unit's design artifacts from `aidlc-docs/construction/{unit-name}/` (from whichever per-unit design stages executed)
 - [ ] Read unit story map to understand assigned stories
 - [ ] Identify unit dependencies and interfaces
 - [ ] Validate unit is ready for code generation

@@ -142,7 +142,7 @@ Evaluate risk level:
 - Configuration updates
 - Straightforward implementations
 
-### 3.4 NFR Implementation - Execute IF:
+### 3.4 NFR Requirements and NFR Design - Execute IF:
 - Performance requirements
 - Security considerations
 - Scalability concerns
@@ -152,6 +152,8 @@ Evaluate risk level:
 - Existing NFR setup sufficient
 - No new NFR requirements
 - Simple changes with no NFR impact
+
+**Note**: NFR Design executes only when NFR Requirements executes (see core-workflow.md)
 
 ## Step 4: Note Adaptive Detail
 
