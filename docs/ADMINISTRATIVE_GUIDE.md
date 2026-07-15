@@ -51,7 +51,9 @@ awslabs/aidlc-workflows/
 │   ├── labeler.yml               # Auto-label rules (path → label mapping)
 │   ├── pull_request_template.md  # PR template with contributor statement
 │   └── workflows/
+│       ├── ci.yml                # Markdown lint checks
 │       ├── codebuild.yml         # CI via AWS CodeBuild
+│       ├── codeql.yml            # CodeQL static analysis
 │       ├── pull-request-lint.yml # PR validation (title, labels, merge gates)
 │       ├── release.yml           # GitHub Release on tag push
 │       ├── release-pr.yml        # Changelog PR before release
@@ -74,7 +76,7 @@ awslabs/aidlc-workflows/
 
 ## CI/CD Architecture
 
-Six workflows form two distinct pipelines, a security scanning suite, plus a pull request validation gate:
+Eight workflows cover two distinct pipelines, a security scanning suite, a pull request validation gate, and two standalone checks — `ci.yml` (markdown linting) and `codeql.yml` (CodeQL static analysis) — that run on pushes and PRs to `main`:
 
 ### Pipeline 1: Release (changelog-first)
 
@@ -502,32 +504,36 @@ All variables have sensible defaults via `${{ vars.VAR || 'default' }}` syntax, 
 
 ### Workflow-level permissions
 
-| Workflow                  | Permissions                               |
-| ------------------------- | ----------------------------------------- |
-| `codebuild.yml`           | All 16 scopes explicitly set to `none`    |
-| `pull-request-lint.yml`   | All 16 scopes explicitly set to `none`    |
-| `release.yml`             | All 16 scopes explicitly set to `none`    |
-| `release-pr.yml`          | All 16 scopes explicitly set to `none`    |
-| `security-scanners.yml`   | All 16 scopes explicitly set to `none`    |
-| `tag-on-merge.yml`        | All 16 scopes explicitly set to `none`    |
+| Workflow                | Permissions                            |
+| ----------------------- | -------------------------------------- |
+| `ci.yml`                | `permissions: {}` (deny all)           |
+| `codebuild.yml`         | All 16 scopes explicitly set to `none` |
+| `codeql.yml`            | `permissions: {}` (deny all)           |
+| `pull-request-lint.yml` | All 16 scopes explicitly set to `none` |
+| `release.yml`           | All 16 scopes explicitly set to `none` |
+| `release-pr.yml`        | All 16 scopes explicitly set to `none` |
+| `security-scanners.yml` | All 16 scopes explicitly set to `none` |
+| `tag-on-merge.yml`      | All 16 scopes explicitly set to `none` |
 
 ### Job-level permissions (overrides)
 
-| Workflow                | Job                    | Permissions                                               | Rationale                                                                                                    |
-| ----------------------- | ---------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `codebuild.yml`         | `label-reminder`       | `pull-requests: write`                                    | Post reminder comment when `rules` label is missing                                                          |
-| `codebuild.yml`         | `label-cleanup`        | `pull-requests: write`                                    | Delete reminder comment when `rules` label is applied                                                        |
-| `codebuild.yml`         | `build`                | `actions: write`, `contents: write`, `id-token: write`    | Cache management, release asset upload, OIDC token for AWS STS                                               |
-| `pull-request-lint.yml` | `auto-label`           | `contents: read`, `issues: write`, `pull-requests: write` | Apply/remove labels based on changed file paths; `issues: write` allows creating labels that don't yet exist |
-| `pull-request-lint.yml` | `get-pr-info`          | `contents: read`, `pull-requests: read`                   | Read PR metadata and labels via API                                                                          |
-| `pull-request-lint.yml` | `check-merge-status`   | `pull-requests: read`                                     | Read PR state for merge gate checks                                                                          |
-| `pull-request-lint.yml` | `validate`             | `pull-requests: read`                                     | Read PR title for conventional commit validation                                                             |
-| `pull-request-lint.yml` | `contributorStatement` | `pull-requests: read`                                     | Read PR body for contributor acknowledgment                                                                  |
-| `release.yml`           | `release`              | `contents: write`                                         | Create draft release and attach zip artifact                                                                 |
-| `release-pr.yml`        | `release-pr`           | `contents: write`, `pull-requests: write`                 | Generate changelog, push branch, open PR                                                                     |
-| `tag-on-merge.yml`      | `tag`                  | `contents: write`, `actions: write`                       | Create tag via API, dispatch release and codebuild workflows                                                 |
+| Workflow                | Job                    | Permissions                                                                   | Rationale                                                                                                    |
+| ----------------------- | ---------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `ci.yml`                | `markdownlint`         | `contents: read`                                                              | Check out the repository for markdown linting                                                                |
+| `codebuild.yml`         | `label-reminder`       | `pull-requests: write`                                                        | Post reminder comment when `rules` label is missing                                                          |
+| `codebuild.yml`         | `label-cleanup`        | `pull-requests: write`                                                        | Delete reminder comment when `rules` label is applied                                                        |
+| `codebuild.yml`         | `build`                | `actions: write`, `contents: write`, `id-token: write`                        | Cache management, release asset upload, OIDC token for AWS STS                                               |
+| `codeql.yml`            | `analyze`              | `security-events: write`, `packages: read`, `actions: read`, `contents: read` | Upload CodeQL results, fetch CodeQL packs, read code and workflow metadata                                   |
+| `pull-request-lint.yml` | `auto-label`           | `contents: read`, `issues: write`, `pull-requests: write`                     | Apply/remove labels based on changed file paths; `issues: write` allows creating labels that don't yet exist |
+| `pull-request-lint.yml` | `get-pr-info`          | `contents: read`, `pull-requests: read`                                       | Read PR metadata and labels via API                                                                          |
+| `pull-request-lint.yml` | `check-merge-status`   | `pull-requests: read`                                                         | Read PR state for merge gate checks                                                                          |
+| `pull-request-lint.yml` | `validate`             | `pull-requests: read`                                                         | Read PR title for conventional commit validation                                                             |
+| `pull-request-lint.yml` | `contributorStatement` | `pull-requests: read`                                                         | Read PR body for contributor acknowledgment                                                                  |
+| `release.yml`           | `release`              | `contents: write`                                                             | Create draft release and attach zip artifact                                                                 |
+| `release-pr.yml`        | `release-pr`           | `contents: write`, `pull-requests: write`                                     | Generate changelog, push branch, open PR                                                                     |
+| `tag-on-merge.yml`      | `tag`                  | `contents: write`, `actions: write`                                           | Create tag via API, dispatch release and codebuild workflows                                                 |
 
-All six workflows follow a **deny-all-then-grant** pattern: every permission scope is set to `none` at the workflow level, then only the required scopes are granted at the job level. This is the strictest possible configuration and prevents privilege escalation from compromised steps. `security-scanners.yml` grants each of its six jobs `actions: read`, `contents: read`, and `security-events: write`.
+All eight workflows follow a **deny-all-then-grant** pattern: permissions are denied at the workflow level (every scope explicitly `none`, or an empty `permissions: {}` block), then only the required scopes are granted at the job level. This is the strictest possible configuration and prevents privilege escalation from compromised steps. `security-scanners.yml` grants each of its six jobs `actions: read`, `contents: read`, and `security-events: write`.
 
 ---
 
@@ -537,7 +543,7 @@ All six workflows follow a **deny-all-then-grant** pattern: every permission sco
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Supply-chain protection** | All external actions pinned to full commit SHAs (not mutable version tags)                                                                                                                                                                              |
 | **AWS authentication**      | OIDC-based role assumption via `id-token: write` — no static credentials stored                                                                                                                                                                         |
-| **Least-privilege tokens**  | All six workflows explicitly deny all 16 permission scopes at workflow level, grant only required scopes at job level                                                                                                                                   |
+| **Least-privilege tokens**  | All eight workflows deny all permission scopes at the workflow level, granting only required scopes at job level                                                                                                                                        |
 | **Environment protection**  | `codebuild` environment gates AWS credential access with potential reviewer/branch rules                                                                                                                                                                |
 | **Security scanning**       | Six automated scanners (SAST, SCA, secrets, IaC, malware) run on every push to `main`, every PR, and daily. Findings are published to GitHub Code Scanning. All HIGH and CRITICAL findings require remediation or documented risk acceptance            |
 | **Label-gated CI**          | `codebuild.yml` requires the `rules` label on PRs and only triggers for `aidlc-rules/**` changes, preventing unnecessary builds and environment approval prompts. The label is applied automatically by the `auto-label` job in `pull-request-lint.yml` |
