@@ -96,7 +96,8 @@ The JSON must have this exact structure:
   ],
   "recommendation": "Clear recommendation stating which alternative is best suited for this project and why, considering the constraints and findings identified"
 }
-```text
+```
+
 Rules:
 
 - The FIRST suggestion MUST describe the current approach as-is (title: "Alternative 1: Current Approach — ..."). Analyze its actual advantages and disadvantages honestly.

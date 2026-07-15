@@ -93,7 +93,8 @@ The JSON must have this exact structure:
     }
   ]
 }
-```text
+```
+
 Rules:
 
 - `severity` must be one of: `"critical"`, `"high"`, `"medium"`, `"low"`

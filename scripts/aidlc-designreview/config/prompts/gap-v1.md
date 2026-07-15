@@ -96,7 +96,8 @@ The JSON must have this exact structure:
     }
   ]
 }
-```text
+```
+
 Rules:
 
 - `category` must be one of the five values listed above
