@@ -10,15 +10,15 @@
 - 🟡 **OPERATIONS PHASE** - Deployment & Monitoring (future expansion)
 
 **Stage**: An individual workflow activity within a phase
-- Examples: Context Assessment stage, Requirements Assessment stage, Code Generation stage
+- Examples: Workspace Detection stage, Requirements Analysis stage, Code Generation stage
 - Each stage has specific prerequisites, steps, and outputs
 - Stages can be ALWAYS-EXECUTE or CONDITIONAL
 
 **Usage Examples**:
-- ✅ "The CONSTRUCTION phase contains 7 stages"
+- ✅ "The CONSTRUCTION phase contains 6 stages"
 - ✅ "The Code Generation stage is always executed"
-- ✅ "We're in the INCEPTION phase, executing the Requirements Assessment stage"
-- ❌ "The Requirements Assessment phase" (should be "stage")
+- ✅ "We're in the INCEPTION phase, executing the Requirements Analysis stage"
+- ❌ "The Requirements Analysis phase" (should be "stage")
 - ❌ "The CONSTRUCTION stage" (should be "phase")
 
 ## Three-Phase Lifecycle
@@ -152,7 +152,7 @@ A reusable building block within a service or module. Components are classes, fu
 Examples (these are internal sub-steps within a single stage, not separate stages):
 - Story Planning → Story Generation (within User Stories stage)
 - Units Planning → Units Generation (within Units Generation stage)
-- Unit Design Planning → Unit Design Generation (within per-unit design)
+- Design Planning → Design Generation (within each per-unit design stage)
 - NFR Planning → NFR Generation (within NFR Requirements stage)
 - Code Generation Part 1 (Planning) → Code Generation Part 2 (Generation)
 
