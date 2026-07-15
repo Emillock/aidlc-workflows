@@ -195,29 +195,11 @@ Identify for each affected module:
 
 ## Step 6: Generate Workflow Visualization
 
-Create Mermaid flowchart showing:
+Create a plain Mermaid flowchart showing:
 - All phases in sequence
-- EXECUTE or SKIP decision for each conditional phase
-- Proper styling for each phase state
+- EXECUTE, SKIP, or COMPLETED status for each stage, written into the node label (e.g., `US["User Stories<br/><b>SKIP</b>"]`)
 
-**Styling rules** (add after flowchart):
-```
-style WD fill:#4CAF50,stroke:#1B5E20,stroke-width:3px,color:#fff
-style CG fill:#4CAF50,stroke:#1B5E20,stroke-width:3px,color:#fff
-style BT fill:#4CAF50,stroke:#1B5E20,stroke-width:3px,color:#fff
-style US fill:#BDBDBD,stroke:#424242,stroke-width:2px,stroke-dasharray: 5 5,color:#000
-style Start fill:#CE93D8,stroke:#6A1B9A,stroke-width:3px,color:#000
-style End fill:#CE93D8,stroke:#6A1B9A,stroke-width:3px,color:#000
-
-linkStyle default stroke:#333,stroke-width:2px
-```
-
-**Style Guidelines**:
-- Completed/Always execute: `fill:#4CAF50,stroke:#1B5E20,stroke-width:3px,color:#fff` (Material Green with white text)
-- Conditional EXECUTE: `fill:#FFA726,stroke:#E65100,stroke-width:3px,stroke-dasharray: 5 5,color:#000` (Material Orange with black text)
-- Conditional SKIP: `fill:#BDBDBD,stroke:#424242,stroke-width:2px,stroke-dasharray: 5 5,color:#000` (Material Gray with black text)
-- Start/End: `fill:#CE93D8,stroke:#6A1B9A,stroke-width:3px,color:#000` (Material Purple with black text)
-- Phase containers: Use lighter Material colors (INCEPTION: #BBDEFB, CONSTRUCTION: #C8E6C9, OPERATIONS: #FFF59D)
+**Keep the diagram plain**: do NOT add `style`, `classDef`, or `linkStyle` lines. Status belongs in node labels, not in colors. Plain diagrams parse more reliably (see content-validation.md) and cost fewer tokens to generate and to reload in later stages.
 
 ## Step 7: Create Execution Plan Document
 
@@ -285,10 +267,9 @@ flowchart TD
     BT --> End(["Complete"])
     
     %% Replace STATUS with COMPLETED, SKIP, EXECUTE as appropriate
-    %% Apply styling based on status
 ```
 
-**Note**: Replace STATUS placeholders with actual phase status (COMPLETED/SKIP/EXECUTE) and apply appropriate styling
+**Note**: Replace STATUS placeholders with actual phase status (COMPLETED/SKIP/EXECUTE). Keep the diagram plain (no style or linkStyle lines)
 
 ## Phases to Execute
 
